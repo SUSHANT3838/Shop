@@ -26,8 +26,8 @@
 <div id="login-page" class="page active">
   <div class="login-box card">
     <div class="login-logo">
-      <span class="icon">🧊</span>
-      <h1>FROSTBITE</h1>
+      <span class="icon"></span>
+      <h1>WELCOME!</h1>
       <p>Cold Drink Shop Management</p>
     </div>
     <div class="login-form">
@@ -40,7 +40,7 @@
         <input type="password" id="login-pass" class="input" placeholder="Enter password">
       </div>
       <button class="btn btn-primary btn-lg btn-block" onclick="doLogin()">Sign In</button>
-      <div class="login-divider"></div>
+      <div class="login-divider">default credentials</div>
       <!-- <div class="credentials-hint">
         Username: <code>owner</code> &nbsp;|&nbsp; Password: <code>admin123</code>
       </div> -->
@@ -55,7 +55,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-brand">
-      <span>🧊 FROSTBITE</span>
+      <span>RANJIT-SHOP</span>
     </div>
     <div class="topbar-nav">
       <button class="nav-btn active" onclick="showTab('dashboard')">Menu</button>
@@ -65,7 +65,7 @@
     </div>
     <div class="topbar-right">
       <div class="clock" id="clock"></div>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">⏏ Logout</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Logout</button>
     </div>
   </div>
 
@@ -113,7 +113,7 @@
         </div>
         <div class="input-group">
           <label>Emoji Icon</label>
-          <input id="f-emoji" class="input"  maxlength="4">
+          <!-- <input id="f-emoji" class="input" placeholder="🥤" maxlength="4"> -->
         </div>
       </div>
       <input type="hidden" id="f-edit-id">
@@ -132,14 +132,14 @@
     <div class="order-layout">
       <div class="order-menu">
         <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <input class="input" id="item-search" placeholder="🔍 Search items..." style="flex:1;min-width:180px;" oninput="renderOrderMenu()">
+          <input class="input" id="item-search" placeholder="Search items..." style="flex:1;min-width:180px;" oninput="renderOrderMenu()">
         </div>
         <div class="cat-filter" id="cat-filter"></div>
         <div class="order-menu-grid" id="order-menu-grid"></div>
       </div>
       <div class="cart-panel">
         <div class="cart-header">
-          <h3>🛒 CART</h3>
+          <h3>CART</h3>
         </div>
         <div class="cart-items" id="cart-items">
           <div class="cart-empty"><div class="ce-icon"></div><p>Add items to start an order</p></div>
@@ -204,7 +204,7 @@
       <button class="btn btn-ghost" onclick="closeBillModal()">Close</button>
     </div>
     <div style="padding:0 24px 20px;font-size:12px;color:var(--muted);">
-       <strong>Thermal Printer:</strong> Connect via Bluetooth/WiFi → Use your printer's app to print, or use browser print (Ctrl+P) → set paper size to 80mm.
+      <strong>Thermal Printer:</strong> Connect via Bluetooth/WiFi → Use your printer's app to print, or use browser print (Ctrl+P) → set paper size to 80mm.
     </div>
   </div>
 </div>

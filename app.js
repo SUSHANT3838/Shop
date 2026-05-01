@@ -1,8 +1,8 @@
 // ═══════════════════════════════
 // STATE
 // ═══════════════════════════════
-const CREDS = { username:'owner', password:'admin123' };
-const SHOP = { name:'FrostBite Cold Drinks', address:'123 Market Street, Gujarat', phone:'+91 98765 43210', gst:'27ABCDE1234F1Z5' };
+const CREDS = { username:'Ranjit', password:'admin@123' };
+const SHOP = { name:'Ranjit-Cold-Drinks', address:'Mohol', phone:''};
 
 let state = {
   items: JSON.parse(localStorage.getItem('fb_items') || 'null') || getDefaultItems(),
@@ -20,19 +20,19 @@ function save() {
 
 function getDefaultItems() {
   return [
-    { id:uid(), name:'Coca Cola', cat:'Cold Drinks', price:40, emoji:'🥤' },
-    { id:uid(), name:'Pepsi', cat:'Cold Drinks', price:35, emoji:'🥤' },
-    { id:uid(), name:'Sprite', cat:'Cold Drinks', price:35, emoji:'🫧' },
-    { id:uid(), name:'Limca', cat:'Cold Drinks', price:30, emoji:'🍋' },
-    { id:uid(), name:'Thums Up', cat:'Cold Drinks', price:40, emoji:'👍' },
-    { id:uid(), name:'Maaza', cat:'Juices', price:30, emoji:'🥭' },
-    { id:uid(), name:'Real Juice Orange', cat:'Juices', price:45, emoji:'🍊' },
-    { id:uid(), name:'Lassi', cat:'Shakes', price:50, emoji:'🥛' },
-    { id:uid(), name:'Chocolate Shake', cat:'Shakes', price:70, emoji:'🍫' },
-    { id:uid(), name:'Vanilla Ice Cream', cat:'Ice Cream', price:40, emoji:'🍦' },
-    { id:uid(), name:'Samosa', cat:'Snacks', price:15, emoji:'🥟' },
-    { id:uid(), name:'Biscuit Pack', cat:'Snacks', price:20, emoji:'🍪' },
-    { id:uid(), name:'Mineral Water', cat:'Water', price:20, emoji:'💧' },
+    { id:uid(), name:'Coca Cola', cat:'Cold Drinks', price:40},
+    { id:uid(), name:'Pepsi', cat:'Cold Drinks', price:35},
+    { id:uid(), name:'Sprite', cat:'Cold Drinks', price:35},
+    { id:uid(), name:'Limca', cat:'Cold Drinks', price:30,},
+    { id:uid(), name:'Thums Up', cat:'Cold Drinks', price:40},
+    { id:uid(), name:'Maaza', cat:'Juices', price:30},
+    { id:uid(), name:'Real Juice Orange', cat:'Juices', price:45},
+    { id:uid(), name:'Lassi', cat:'Shakes', price:50},
+    { id:uid(), name:'Chocolate Shake', cat:'Shakes', price:70},
+    { id:uid(), name:'Vanilla Ice Cream', cat:'Ice Cream', price:40},
+    { id:uid(), name:'Samosa', cat:'Snacks', price:15},
+    { id:uid(), name:'Biscuit Pack', cat:'Snacks', price:20 },
+    { id:uid(), name:'Mineral Water', cat:'Water', price:20 },
   ];
 }
 
@@ -63,6 +63,8 @@ function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value.trim();
   if(u===CREDS.username && p===CREDS.password) {
+    // persist login until explicit logout
+    localStorage.setItem('loggedIn','true');
     document.getElementById('login-page').classList.remove('active');
     document.getElementById('app-page').classList.add('active');
     initApp();
@@ -80,6 +82,8 @@ function doLogout() {
   document.getElementById('login-page').classList.add('active');
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
+  // remove persistent login flag
+  localStorage.removeItem('loggedIn');
   toast('Logged out');
 }
 
@@ -156,12 +160,12 @@ function renderDashboard() {
   if(!state.items.length) { grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;">No items yet. Add some!</p>'; return; }
   grid.innerHTML = state.items.map(item=>`
     <div class="card menu-item-card">
-      <span class="item-emoji">${item.emoji}</span>
+      
       <div class="item-name">${item.name}</div>
       <div class="item-cat"><span class="badge badge-cyan">${item.cat}</span></div>
       <div class="item-price">${fmt(item.price)}</div>
       <div class="item-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editItem('${item.id}')">✏️ Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="editItem('${item.id}')"> Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}')">🗑</button>
       </div>
     </div>
@@ -176,29 +180,28 @@ function toggleItemForm() {
 function cancelItemForm() { document.getElementById('item-form').style.display='none'; clearForm(); }
 
 function clearForm() {
-  ['f-name','f-price','f-emoji'].forEach(id=>document.getElementById(id).value='');
+  ['f-name','f-price'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-cat').value='Cold Drinks';
   document.getElementById('f-edit-id').value='';
-  document.getElementById('form-title').textContent='➕ Add New Item';
+  document.getElementById('form-title').textContent='Add New Item';
 }
 
 function saveItem() {
   const name = document.getElementById('f-name').value.trim();
   const cat = document.getElementById('f-cat').value;
   const price = parseFloat(document.getElementById('f-price').value);
-  const emoji = document.getElementById('f-emoji').value.trim() || '🥤';
   const editId = document.getElementById('f-edit-id').value;
   if(!name) { toast('Item name is required','error'); return; }
   if(isNaN(price)||price<0) { toast('Enter a valid price','error'); return; }
   if(editId) {
     const i = state.items.findIndex(x=>x.id===editId);
-    state.items[i] = { id:editId, name, cat, price, emoji };
-    toast('Item updated ✅','success');
+    state.items[i] = { id:editId, name, cat, price };
+    toast('Item updated ','success');
   } else {
-    state.items.push({ id:uid(), name, cat, price, emoji });
-    toast('Item added ✅','success');
+    state.items.push({ id:uid(), name, cat, price });
+    toast('Item added ','success');
   }
-  save(); renderDashboard(); renderDashboardStats(); cancelItemForm();
+  save(); renderDashboard(); renderDashboardStats(); renderOrderMenu(); cancelItemForm();
 }
 
 function editItem(id) {
@@ -206,9 +209,8 @@ function editItem(id) {
   document.getElementById('f-name').value = item.name;
   document.getElementById('f-cat').value = item.cat;
   document.getElementById('f-price').value = item.price;
-  document.getElementById('f-emoji').value = item.emoji;
   document.getElementById('f-edit-id').value = id;
-  document.getElementById('form-title').textContent = '✏️ Edit Item';
+  document.getElementById('form-title').textContent = 'Edit Item';
   document.getElementById('item-form').style.display = 'block';
   document.getElementById('item-form').scrollIntoView({behavior:'smooth'});
 }
@@ -216,7 +218,7 @@ function editItem(id) {
 function deleteItem(id) {
   if(!confirm('Delete this item?')) return;
   state.items = state.items.filter(x=>x.id!==id);
-  save(); renderDashboard(); renderDashboardStats();
+  save(); renderDashboard(); renderDashboardStats(); renderOrderMenu();
   toast('Item deleted','info');
 }
 
@@ -239,7 +241,7 @@ function renderOrderMenu() {
   document.getElementById('order-menu-grid').innerHTML = filtered.length
     ? filtered.map(i=>`
         <button class="order-item-btn" onclick="addToCart('${i.id}')">
-          <span class="oi-emoji">${i.emoji}</span>
+          
           <div class="oi-name">${i.name}</div>
           <div class="oi-price">${fmt(i.price)}</div>
         </button>`).join('')
@@ -252,10 +254,10 @@ function addToCart(itemId) {
   const item = state.items.find(x=>x.id===itemId);
   const existing = state.cart.find(x=>x.id===itemId);
   if(existing) existing.qty++;
-  else state.cart.push({ id:itemId, name:item.name, price:item.price, emoji:item.emoji, qty:1 });
+  else state.cart.push({ id:itemId, name:item.name, price:item.price, qty:1 });
   renderCart();
   // micro-feedback
-  toast(`${item.emoji} ${item.name} added`,'success');
+  toast(`${item.name} added`,'success');
 }
 
 function changeQty(id, delta) {
@@ -278,12 +280,12 @@ function clearCart() {
 function renderCart() {
   const el = document.getElementById('cart-items');
   if(!state.cart.length) {
-    el.innerHTML='<div class="cart-empty"><div class="ce-icon">🧊</div><p>Add items to start an order</p></div>';
+    el.innerHTML='<div class="cart-empty"><div class="ce-icon"></div><p>Add items to start an order</p></div>';
     renderCartTotals(); return;
   }
   el.innerHTML = state.cart.map(ci=>`
     <div class="cart-row">
-      <span>${ci.emoji}</span>
+      <span>${ci.emoji||''}</span>
       <div style="flex:1">
         <div class="cr-name">${ci.name}</div>
         <div class="cr-price">${fmt(ci.price)} each → ${fmt(ci.price*ci.qty)}</div>
@@ -367,7 +369,7 @@ function showBillModal(order) {
 function buildBillHTML(order) {
   const items = order.items.map(i=>`
     <tr>
-      <td>${i.emoji} ${i.name}</td>
+      <td>${i.emoji||''} ${i.name}</td>
       <td>${i.qty}</td>
       <td>${fmt(i.price)}</td>
       <td>${fmt(i.price*i.qty)}</td>
@@ -376,7 +378,7 @@ function buildBillHTML(order) {
   return `
     <div class="bill-shop-name">${SHOP.name}</div>
     <div class="bill-sub">${SHOP.address}</div>
-    <div class="bill-sub">📞 ${SHOP.phone}</div>
+    <div class="bill-sub"> ${SHOP.phone}</div>
     ${order.gst>0?`<div class="bill-sub">GST: ${SHOP.gst}</div>`:''}
     <hr class="bill-divider">
     <div class="bill-meta">Order: <strong>${order.id}</strong></div>
@@ -393,7 +395,7 @@ function buildBillHTML(order) {
     ${order.gstAmt>0?`<div class="bill-gst-row"><span>GST (${order.gst}%)</span><span>+ ${fmt(order.gstAmt)}</span></div>`:''}
     <div class="bill-grand"><span>GRAND TOTAL</span><span>${fmt(order.total)}</span></div>
     <div class="bill-footer-text" style="margin-top:16px;">
-      Thank you for visiting ${SHOP.name}! 🧊<br>
+      Thank you for visiting ${SHOP.name}! <br>
       Come again & stay cool!
     </div>
   `;
@@ -401,7 +403,7 @@ function buildBillHTML(order) {
 
 function buildPrintHTML(order) {
   const items = order.items.map(i=>`
-    <div class="print-row"><span>${i.emoji} ${i.name} x${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>
+    <div class="print-row"><span>${i.emoji||''} ${i.name} x${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>
   `).join('');
   return `
     <div class="print-shop-name">${SHOP.name}</div>
@@ -419,7 +421,7 @@ function buildPrintHTML(order) {
     ${order.gstAmt>0?`<div class="print-row"><span>GST (${order.gst}%)</span><span>+${fmt(order.gstAmt)}</span></div>`:''}
     <div class="print-row print-total"><span>TOTAL</span><span>${fmt(order.total)}</span></div>
     <div class="print-line"></div>
-    <div style="text-align:center;margin-top:8px;">Thank you! Come again 🧊</div>
+    <div style="text-align:center;margin-top:8px;">Thank you! Come again </div>
   `;
 }
 
@@ -465,19 +467,19 @@ function renderHistory() {
       <div class="order-card-header">
         <div>
           <div class="order-id">${o.id}</div>
-          <div style="font-weight:600;margin-top:4px;">👤 ${o.customer}</div>
+          <div style="font-weight:600;margin-top:4px;"> ${o.customer}</div>
         </div>
         <div style="text-align:right">
           <div class="order-time">${fmtDate(o.timestamp)}</div>
           <div class="order-total">${fmt(o.total)}</div>
         </div>
       </div>
-      <div class="order-items-list">${o.items.map(i=>`${i.emoji} ${i.name} ×${i.qty} (${fmt(i.price*i.qty)})`).join('  ·  ')}</div>
+      <div class="order-items-list">${o.items.map(i=>`${i.emoji||''} ${i.name} ×${i.qty} (${fmt(i.price*i.qty)})`).join('  ·  ')}</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         ${o.discAmt>0?`<span class="badge badge-orange">Discount ${o.disc}%</span>`:''}
         ${o.gstAmt>0?`<span class="badge badge-cyan">GST ${o.gst}%</span>`:''}
-        <button class="btn btn-ghost btn-sm" onclick='reprintBill(${JSON.stringify(o).replace(/'/g,"&apos;")})'>🧾 View Bill</button>
-        <button class="btn btn-ghost btn-sm" onclick='reprintBillPrint(${JSON.stringify(o).replace(/'/g,"&apos;")})'>🖨 Print</button>
+        <button class="btn btn-ghost btn-sm" onclick='reprintBill(${JSON.stringify(o).replace(/'/g,"&apos;")})'> View Bill</button>
+        <button class="btn btn-ghost btn-sm" onclick='reprintBillPrint(${JSON.stringify(o).replace(/'/g,"&apos;")})'> Print</button>
       </div>
     </div>
   `).join('');
@@ -519,12 +521,12 @@ function renderSummary() {
       <div class="card stat-card"><div class="stat-val">${totalItems}</div><div class="stat-label">Items Sold</div></div>
       <div class="card stat-card"><div class="stat-val">${fmt(avgOrder)}</div><div class="stat-label">Avg Order Value</div></div>
     </div>
-    ${topItems.length ? `
+      ${topItems.length ? `
     <div class="card summary-card">
-      <h3 style="margin-bottom:16px;font-size:18px;color:var(--frost);">📊 Item Breakdown</h3>
+      <h3 style="margin-bottom:16px;font-size:18px;color:var(--frost);"> Item Breakdown</h3>
       ${topItems.map(i=>`
         <div class="summary-row">
-          <span>${i.emoji} ${i.name}</span>
+          <span>${i.emoji||''} ${i.name}</span>
           <span>${i.qty} sold</span>
           <span class="summary-val">${fmt(i.revenue)}</span>
         </div>
@@ -537,5 +539,13 @@ function renderSummary() {
 // ═══════════════════════════════
 // INIT
 // ═══════════════════════════════
-// Show login on load
-document.getElementById('login-page').classList.add('active');
+// Show login on load — restore session if persisted
+if (localStorage.getItem('loggedIn') === 'true') {
+  document.getElementById('login-page').classList.remove('active');
+  document.getElementById('app-page').classList.add('active');
+  initApp();
+  toast('Welcome back, Owner! 👋','success');
+} else {
+  document.getElementById('login-page').classList.add('active');
+  document.getElementById('app-page').classList.remove('active');
+}
